@@ -21,9 +21,10 @@ include_recipe "build-essential"
 
 sphinx_path = "/tmp/sphinx-#{node[:sphinx][:version]}-release"
 sphinx_tar = "#{sphinx_path}.tar.gz"
+sphinx_url = node[:sphinx][:url].scan(/(.*)-VERSION-(.*)/).join "-#{node[:sphinx][:version]}-"
 
 remote_file sphinx_tar do
-  source "#{node[:sphinx][:url]}"
+  source sphinx_url
   not_if { ::File.exists?(sphinx_tar) }
 end
 
@@ -46,16 +47,24 @@ if node[:sphinx][:use_stemmer]
   end
 end
 
+configure_flags = [
+  "#{node[:sphinx][:use_stemmer] ? '--with-stemmer' : '--without-stemmer'}",
+  "#{node[:sphinx][:use_mysql] ? '--with-mysql' : '--without-mysql'}",
+  "#{node[:sphinx][:use_postgres] ? '--with-pgsql' : '--without-pgsql'}",
+  "#{node[:sphinx][:use_syslog] ? '--with-syslog' : '--without-syslog'}",
+] + node[:sphinx][:configure_flags]
+
 bash "Build and Install Sphinx Search" do
   cwd sphinx_path
   # use trailing && to break on the first thing.
   # Otherwise the whole block depends on the last line
   code <<-EOH
-    ./configure #{node[:sphinx][:configure_flags].join(" ")} &&
+    ./configure --prefix #{node[:sphinx][:install_path]} \
+    #{configure_flags.join(" ")} &&
     make &&
     make install
   EOH
-  not_if { ::File.exists?("/usr/local/bin/searchd") }
+  not_if { ::File.exists?("#{node[:sphinx][:install_path]}/bin/searchd") }
   # add additional test to verify of searchd is same as version of sphinx we are installing
   #  && system("#{node[:sphinx][:install_path]}/bin/ree-version | grep -q '#{node[:sphinx][:version]}$'")
 end
