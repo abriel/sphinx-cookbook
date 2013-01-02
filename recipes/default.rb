@@ -26,8 +26,16 @@ else
   include_recipe "sphinx::source"
 end
 
-directory node['sphinx']['install_path'] do
-  recursive true
+[
+  File.dirname(node[:sphinx][:searchd][:log]),
+  File.dirname(node[:sphinx][:searchd][:query_log]),
+  "#{node['sphinx']['install_path']}/conf.d",
+  ].sort.uniq.each do |dir|
+    directory "#{dir}" do
+      recursive true
+      owner node[:sphinx][:user]
+      group node[:sphinx][:group]
+    end
 end
 
 template "#{node['sphinx']['install_path']}/sphinx.conf" do
@@ -38,10 +46,4 @@ template "#{node['sphinx']['install_path']}/sphinx.conf" do
   variables :install_path => node['sphinx']['install_path'],
             :searchd => node['sphinx']['searchd'],
             :indexer => node['sphinx']['indexer']
-end
-
-directory "#{node['sphinx']['install_path']}/conf.d" do
-  owner node[:sphinx][:user]
-  group node[:sphinx][:group]
-  mode '0755'
 end
