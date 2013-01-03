@@ -69,3 +69,31 @@ bash "Build and Install Sphinx Search" do
   #  && system("#{node[:sphinx][:install_path]}/bin/ree-version | grep -q '#{node[:sphinx][:version]}$'")
 end
 
+case node['platform_family']
+when "arch"
+  init_dir = "/etc/rc.d/"
+else
+  init_dir = "/etc/init.d/"
+end
+
+template File.join(init_dir, "sphinxsearch") do
+  source "init.d"
+  action :create_if_missing
+  variables(
+    :install_path => node[:sphinx][:install_path],
+    :log_dir => File.dirname(node[:sphinx][:searchd][:log]),
+    :pid_file => node[:sphinx][:searchd][:pid_file],
+    :user => node[:sphinx][:user],
+    )
+  mode 0755
+end
+
+template "/etc/cron.d/sphinxsearch" do
+  source "cron.d"
+  action :create_if_missing
+  variables(
+    :install_path => node[:sphinx][:install_path],
+    :user => node[:sphinx][:user],
+    )
+  mode 0755
+end
