@@ -20,7 +20,7 @@ action :reindex do
     execute "Reindexing #{new_resource.name}" do
         rotate = new_resource.rotate ? "--rotate" : ""
         config = "--config #{node['sphinx']['install_path']}/sphinx.conf"
-        command "indexer #{config} #{rotate} #{new_resource.name}"
+        command "#{node[:sphinx][:install_path]}/bin/indexer #{config} #{rotate} #{new_resource.name}"
     end
 end
 
