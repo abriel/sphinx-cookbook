@@ -21,6 +21,7 @@ action :reindex do
         rotate = new_resource.rotate ? "--rotate" : ""
         config = "--config #{node['sphinx']['install_path']}/sphinx.conf"
         command "#{node[:sphinx][:install_path]}/bin/indexer #{config} #{rotate} #{new_resource.name}"
+        timeout 86400
     end
 end
 
