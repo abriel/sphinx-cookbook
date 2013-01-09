@@ -83,7 +83,8 @@ template File.join(init_dir, "sphinxsearch") do
     :install_path => node[:sphinx][:install_path],
     :log_dir => File.dirname(node[:sphinx][:searchd][:log]),
     :pid_file => node[:sphinx][:searchd][:pid_file],
-    :user => node[:sphinx][:user]
+    :user => node[:sphinx][:user],
+    :group => node[:sphinx][:group]
     )
   mode 0755
 end

@@ -22,6 +22,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:<%= @install_p
 DAEMON=<%= @install_path %>/bin/searchd
 NAME=sphinxsearch
 DESC=sphinxsearch
+USER=<%= @user %>
+GROUP=<%= @group %>
 
 test -x $DAEMON || exit 0
 
@@ -95,7 +97,7 @@ case "$1" in
   start)
         echo -n "Starting $DESC: "
 
-        start-stop-daemon --start --exec ${DAEMON} -- -c <%= @install_path %>/sphinx.conf
+        start-stop-daemon --start --exec ${DAEMON} -c ${USER} -g ${GROUP} -- -c <%= @install_path %>/sphinx.conf
         if running ; then
             echo "$NAME."
         else
@@ -104,7 +106,7 @@ case "$1" in
         ;;
   stop)
         echo -n "Stopping $DESC: "
-        start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE \
+        start-stop-daemon --stop --quiet -u ${USER} --oknodo --pidfile $PIDFILE \
             --exec $DAEMON
         echo "$NAME."
         ;;
