@@ -78,7 +78,6 @@ end
 
 template File.join(init_dir, "sphinxsearch") do
   source "init.d"
-  action :create_if_missing
   variables(
     :install_path => node[:sphinx][:install_path],
     :log_dir => File.dirname(node[:sphinx][:searchd][:log]),
@@ -91,7 +90,6 @@ end
 
 template "/etc/cron.d/sphinxsearch" do
   source "cron.d"
-  action :create_if_missing
   variables(
     :install_path => node[:sphinx][:install_path],
     :user => node[:sphinx][:user]

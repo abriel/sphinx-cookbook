@@ -97,7 +97,10 @@ case "$1" in
   start)
         echo -n "Starting $DESC: "
 
-        start-stop-daemon --start --exec ${DAEMON} -c ${USER} -g ${GROUP} -- -c <%= @install_path %>/sphinx.conf
+        if ! running ; then
+            start-stop-daemon --start --exec ${DAEMON} -c ${USER} -g ${GROUP} -- -c <%= @install_path %>/sphinx.conf
+        fi
+
         if running ; then
             echo "$NAME."
         else
