@@ -44,6 +44,6 @@ template "#{node['sphinx']['install_path']}/sphinx.conf" do
   group node[:sphinx][:group]
   mode '0644'
   variables :install_path => node['sphinx']['install_path'],
-            :searchd => node['sphinx']['searchd'],
-            :indexer => node['sphinx']['indexer']
+            :searchd => node['sphinx']['searchd'].sort,
+            :indexer => node['sphinx']['indexer'].sort
 end
